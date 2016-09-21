@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/signal"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/gizak/termui"
@@ -22,7 +21,6 @@ type response struct {
 var (
 	lc0                    *termui.LineChart
 	avgPar                 *termui.Par
-	history                = []savedResult{}
 	historySize            = 200
 	currentlyShowingPoints = 10
 )
@@ -61,8 +59,11 @@ func main() {
 	lc0.BorderLabel = "ping " + host
 	lc0.AxesColor = termui.ColorWhite
 	lc0.LineColor = termui.ColorYellow
+
+	history := []savedResult{}
+
 	updateUIPositions()
-	repaintScreen()
+	repaintScreen(history)
 
 	termui.Handle("/sys/kbd/q", func(termui.Event) {
 		termui.StopLoop()
@@ -70,7 +71,7 @@ func main() {
 
 	termui.Handle("/sys/wnd/resize", func(termui.Event) {
 		updateUIPositions()
-		repaintScreen()
+		repaintScreen(history)
 	})
 
 	p := fastping.NewPinger()
@@ -101,8 +102,7 @@ func main() {
 	p.RunLoop()
 
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	signal.Notify(c, syscall.SIGTERM)
+	//signal.Notify(c, syscall.SIGTERM)
 
 	go func() {
 	loop:
@@ -116,6 +116,7 @@ func main() {
 					results[r.addr.String()] = r
 				}
 			case <-onIdle:
+				matches := 0
 				for host, r := range results {
 					res := savedResult{
 						host: host,
@@ -129,12 +130,14 @@ func main() {
 						//					fmt.Printf("%s : %v %v\n", host, r.rtt, time.Now())
 					}
 					history = append(history, res)
-					results[host] = nil
+					matches++
 				}
 				if len(history) > historySize {
 					history = history[len(history)-historySize:]
 				}
-				repaintScreen()
+				if matches > 0 {
+					repaintScreen(history)
+				}
 			case <-p.Done():
 				if err = p.Err(); err != nil {
 					fmt.Println("Ping failed:", err)
@@ -156,7 +159,7 @@ type savedResult struct {
 	dead bool
 }
 
-func repaintScreen() {
+func repaintScreen(history []savedResult) {
 
 	pos := len(history) - currentlyShowingPoints
 	if pos < 0 {
@@ -180,7 +183,7 @@ func repaintScreen() {
 	if currHistLen > 0 {
 		avg := sum / time.Duration(currHistLen)
 		curr := history[currHistLen-1]
-		avgPar.Text = fmt.Sprintf("avg %.1f ms, curr %.1f ms", avg.Seconds()*1000, curr.rtt.Seconds()*1000)
+		avgPar.Text = fmt.Sprintf("avg(%d) %.1f ms, now %.1f ms", currHistLen, avg.Seconds()*1000, curr.rtt.Seconds()*1000)
 		avgPar.X = termui.TermWidth() - len(avgPar.Text) - 2
 		avgPar.Width = len(avgPar.Text)
 	}
