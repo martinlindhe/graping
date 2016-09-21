@@ -179,7 +179,7 @@ func repaintScreen() {
 
 	if currHistLen > 0 {
 		avg := sum / time.Duration(currHistLen)
-		curr := history[len(history)-1]
+		curr := history[currHistLen-1]
 		avgPar.Text = fmt.Sprintf("avg %.1f ms, curr %.1f ms", avg.Seconds()*1000, curr.rtt.Seconds()*1000)
 		avgPar.X = termui.TermWidth() - len(avgPar.Text) - 2
 		avgPar.Width = len(avgPar.Text)
