@@ -20,7 +20,6 @@ type response struct {
 }
 
 var (
-	host                   = flag.String("host", "google.com", "Host to ping.") // XXX should be first param, not a flag
 	lc0                    *termui.LineChart
 	avgPar                 *termui.Par
 	history                = []savedResult{}
@@ -41,6 +40,13 @@ func updateUIPositions() {
 func main() {
 	flag.Parse()
 
+	host := ""
+	if len(os.Args) < 2 {
+		fmt.Println("host undefined, using google.com")
+		host = "google.com"
+	} else {
+		host = os.Args[1]
+	}
 	err := termui.Init()
 	if err != nil {
 		panic(err)
@@ -52,7 +58,7 @@ func main() {
 	avgPar.Border = false
 
 	lc0 = termui.NewLineChart()
-	lc0.BorderLabel = "ping " + *host
+	lc0.BorderLabel = "ping " + host
 	lc0.AxesColor = termui.ColorWhite
 	lc0.LineColor = termui.ColorYellow
 	updateUIPositions()
@@ -70,10 +76,10 @@ func main() {
 	p := fastping.NewPinger()
 
 	netProto := "ip4:icmp"
-	if strings.ContainsAny(*host, ":") {
+	if strings.ContainsAny(host, ":") {
 		netProto = "ip6:ipv6-icmp"
 	}
-	ra, err := net.ResolveIPAddr(netProto, *host)
+	ra, err := net.ResolveIPAddr(netProto, host)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
