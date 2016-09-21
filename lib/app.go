@@ -19,6 +19,7 @@ var (
 	currentlyShowingPoints = 10
 )
 
+// App ...
 type App struct {
 }
 
@@ -34,10 +35,12 @@ type savedResult struct {
 	dead bool
 }
 
+// NewApp ...
 func NewApp() *App {
 	return &App{}
 }
 
+// HandleAll ...
 func (app *App) HandleAll() {
 
 	host := ""
