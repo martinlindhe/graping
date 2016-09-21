@@ -28,7 +28,7 @@ var (
 func updateUIPositions() {
 	height := termui.TermHeight()
 	width := termui.TermWidth()
-	lc0.Width = width
+	lc0.SetWidth(width)
 	lc0.Height = height
 	avgPar.X = width - len(avgPar.Text) - 1
 	avgPar.Y = height - 1
