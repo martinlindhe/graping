@@ -1,3 +1,5 @@
 build:
 	go build -v .
-	# sudo chmod u+s graping
+	# needed for ICMP ping on macOS and Linux
+	sudo chown root graping
+	sudo chmod u+s graping

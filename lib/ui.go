@@ -40,11 +40,11 @@ func repaintScreen(history []savedResult) {
 
 	if currHistLen > 0 {
 		avg := sum / time.Duration(currHistLen)
-		curr := history[currHistLen-1]
+		last := history[len(history)-1]
 		txt := fmt.Sprintf("avg(%d) %.1f ms, ", currHistLen, avg.Seconds()*1000)
 
-		if curr.rtt != 0 {
-			txt += fmt.Sprintf("now %.1f ms", curr.rtt.Seconds()*1000)
+		if last.rtt != 0. {
+			txt += fmt.Sprintf("now %.1f ms", last.rtt.Seconds()*1000)
 		} else {
 			txt += "now n/a ms"
 		}

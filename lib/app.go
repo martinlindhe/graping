@@ -40,8 +40,8 @@ func NewApp() *App {
 	return &App{}
 }
 
-// HandleAll ...
-func (app *App) HandleAll() {
+// Loop ...
+func (app *App) Loop() {
 
 	host := ""
 	if len(os.Args) < 2 {
@@ -60,6 +60,7 @@ func (app *App) HandleAll() {
 	avgPar.Border = false
 
 	lc0 = termui.NewLineChart()
+	lc0.Mode = "dot"
 	lc0.BorderLabel = "ping " + host
 	lc0.AxesColor = termui.ColorWhite
 	lc0.LineColor = termui.ColorYellow
@@ -106,7 +107,6 @@ func (app *App) HandleAll() {
 	p.RunLoop()
 
 	c := make(chan os.Signal, 1)
-	//signal.Notify(c, syscall.SIGTERM)
 
 	go func() {
 	loop:
