@@ -28,9 +28,9 @@ func (app *App) repaintScreen(history []savedResult) {
 	if pos < 0 {
 		pos = 0
 	}
-	currHistLen := len(history[pos:])
+	histLen := len(history[pos:])
 	var sum time.Duration
-	data := make([]float64, currHistLen)
+	data := make([]float64, histLen)
 
 	for i, hist := range history[pos:] {
 		if hist.dead {
@@ -49,22 +49,22 @@ func (app *App) repaintScreen(history []savedResult) {
 	}
 	app.chart.Data = data
 
-	if currHistLen > 0 {
+	if histLen > 0 {
 		txt := ""
 
-		if app.width > 65 {
-			duration := time.Since(app.started)
-			txt += fmt.Sprintf("running %v, ", duration-(duration%time.Second))
-			txt += fmt.Sprintf("min %1.f ms, ", app.min)
-			txt += fmt.Sprintf("max %.1f ms, ", app.max)
+		if app.width > 60 {
+			//duration := time.Since(app.started)
+			//txt += fmt.Sprintf("ran %v, ", duration-(duration%time.Second))
+			txt += fmt.Sprintf("min %.0f ms, ", app.min)
+			txt += fmt.Sprintf("max %.0f ms, ", app.max)
 		}
 
-		avg := sum / time.Duration(currHistLen)
+		avg := sum / time.Duration(histLen)
 		last := history[len(history)-1]
-		txt += fmt.Sprintf("avg %.1f ms, ", avg.Seconds()*1000)
+		txt += fmt.Sprintf("avg %.0f ms, ", avg.Seconds()*1000)
 
 		if last.rtt != 0. {
-			txt += fmt.Sprintf("now %.1f ms", last.rtt.Seconds()*1000)
+			txt += fmt.Sprintf("now %.0f ms", last.rtt.Seconds()*1000)
 		} else {
 			txt += "now n/a ms"
 		}
