@@ -31,8 +31,6 @@ func (app *App) repaintScreen(history []savedResult) {
 	currHistLen := len(history[pos:])
 	var sum time.Duration
 	data := make([]float64, currHistLen)
-	max := 0.
-	min := 9999.
 
 	for i, hist := range history[pos:] {
 		if hist.dead {
@@ -40,11 +38,11 @@ func (app *App) repaintScreen(history []savedResult) {
 		} else {
 			// in ms
 			data[i] = hist.rtt.Seconds() * 1000
-			if max < data[i] {
-				max = data[i]
+			if app.max < data[i] {
+				app.max = data[i]
 			}
-			if min > data[i] {
-				min = data[i]
+			if app.min > data[i] {
+				app.min = data[i]
 			}
 			sum += hist.rtt
 		}
@@ -54,11 +52,11 @@ func (app *App) repaintScreen(history []savedResult) {
 	if currHistLen > 0 {
 		txt := ""
 
-		duration := time.Since(app.started)
-		txt += fmt.Sprintf("running %v, ", duration-(duration%time.Second))
-		if app.width > 40 {
-			txt += fmt.Sprintf("min %1.f ms, ", min)
-			txt += fmt.Sprintf("max %.1f ms, ", max)
+		if app.width > 65 {
+			duration := time.Since(app.started)
+			txt += fmt.Sprintf("running %v, ", duration-(duration%time.Second))
+			txt += fmt.Sprintf("min %1.f ms, ", app.min)
+			txt += fmt.Sprintf("max %.1f ms, ", app.max)
 		}
 
 		avg := sum / time.Duration(currHistLen)

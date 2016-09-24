@@ -23,6 +23,7 @@ type App struct {
 	chart         *termui.LineChart
 	footer        *termui.Par
 	width, height int
+	max, min      float64
 }
 
 type response struct {
@@ -39,7 +40,11 @@ type savedResult struct {
 
 // NewApp ...
 func NewApp() *App {
-	app := &App{started: time.Now()}
+	app := &App{
+		started: time.Now(),
+		max:     0.,
+		min:     9999.,
+	}
 
 	app.chart = termui.NewLineChart()
 	app.chart.AxesColor = termui.ColorWhite
