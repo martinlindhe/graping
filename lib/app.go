@@ -23,6 +23,7 @@ type App struct {
 	chart         *termui.LineChart
 	footer        *termui.Par
 	width, height int
+	max, min      float64
 }
 
 type response struct {
