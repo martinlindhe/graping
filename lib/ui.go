@@ -10,15 +10,20 @@ import (
 func (app *App) updateUIPositions() {
 	app.height = termui.TermHeight()
 	app.width = termui.TermWidth()
-	lc0.Width = app.width
-	lc0.Height = app.height
-	avgPar.X = app.width - len(avgPar.Text) - 1
-	avgPar.Y = app.height - 1
-	currentlyShowingPoints = app.width - 8
+	app.chart.Width = app.width
+	app.chart.Height = app.height
+	app.footer.X = app.width - len(app.footer.Text) - 1
+	app.footer.Y = app.height - 1
+	currentlyShowingPoints = app.chart.Width - 8
+	if app.chart.Mode == "braille" {
+		currentlyShowingPoints *= 2
+	}
 }
 
 func (app *App) repaintScreen(history []savedResult) {
 
+	// pos is offset for start of history to plot on screen,
+	// wrt to the full history buffer
 	pos := len(history) - currentlyShowingPoints
 	if pos < 0 {
 		pos = 0
@@ -44,7 +49,7 @@ func (app *App) repaintScreen(history []savedResult) {
 			sum += hist.rtt
 		}
 	}
-	lc0.Data = data
+	app.chart.Data = data
 
 	if currHistLen > 0 {
 		txt := ""
@@ -65,10 +70,10 @@ func (app *App) repaintScreen(history []savedResult) {
 		} else {
 			txt += "now n/a ms"
 		}
-		avgPar.Text = txt
-		avgPar.X = termui.TermWidth() - len(avgPar.Text) - 2
-		avgPar.Width = len(avgPar.Text)
+		app.footer.Text = txt
+		app.footer.X = termui.TermWidth() - len(app.footer.Text) - 2
+		app.footer.Width = len(app.footer.Text)
 	}
 
-	termui.Render(lc0, avgPar)
+	termui.Render(app.chart, app.footer)
 }

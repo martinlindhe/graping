@@ -13,8 +13,6 @@ import (
 )
 
 var (
-	lc0                    *termui.LineChart
-	avgPar                 *termui.Par
 	historySize            = 200
 	currentlyShowingPoints = 10
 )
@@ -22,6 +20,8 @@ var (
 // App ...
 type App struct {
 	started       time.Time
+	chart         *termui.LineChart
+	footer        *termui.Par
 	width, height int
 }
 
@@ -39,33 +39,30 @@ type savedResult struct {
 
 // NewApp ...
 func NewApp() *App {
-	return &App{started: time.Now()}
+	app := &App{started: time.Now()}
+
+	app.chart = termui.NewLineChart()
+	app.chart.AxesColor = termui.ColorWhite
+	app.chart.LineColor = termui.ColorYellow
+
+	app.footer = termui.NewPar("")
+	app.footer.Height = 1
+	app.footer.Border = false
+
+	return app
 }
 
 // Loop ...
 func (app *App) Loop() {
 
-	host := ""
-	if len(os.Args) < 2 {
-		host = "google.com"
-	} else {
-		host = os.Args[1]
-	}
+	host := app.getHost()
+	app.chart.BorderLabel = "ping " + host
+
 	err := termui.Init()
 	if err != nil {
 		panic(err)
 	}
 	defer termui.Close()
-
-	avgPar = termui.NewPar("")
-	avgPar.Height = 1
-	avgPar.Border = false
-
-	lc0 = termui.NewLineChart()
-	lc0.Mode = "dot"
-	lc0.BorderLabel = "ping " + host
-	lc0.AxesColor = termui.ColorWhite
-	lc0.LineColor = termui.ColorYellow
 
 	history := []savedResult{}
 
@@ -156,4 +153,11 @@ func (app *App) Loop() {
 	}()
 
 	termui.Loop()
+}
+
+func (app *App) getHost() string {
+	if len(os.Args) < 2 {
+		return "google.com"
+	}
+	return os.Args[1]
 }
