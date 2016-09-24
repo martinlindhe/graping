@@ -21,6 +21,8 @@ var (
 
 // App ...
 type App struct {
+	started       time.Time
+	width, height int
 }
 
 type response struct {
@@ -37,7 +39,7 @@ type savedResult struct {
 
 // NewApp ...
 func NewApp() *App {
-	return &App{}
+	return &App{started: time.Now()}
 }
 
 // Loop ...
@@ -67,16 +69,16 @@ func (app *App) Loop() {
 
 	history := []savedResult{}
 
-	updateUIPositions()
-	repaintScreen(history)
+	app.updateUIPositions()
+	app.repaintScreen(history)
 
 	termui.Handle("/sys/kbd/q", func(termui.Event) {
 		termui.StopLoop()
 	})
 
 	termui.Handle("/sys/wnd/resize", func(termui.Event) {
-		updateUIPositions()
-		repaintScreen(history)
+		app.updateUIPositions()
+		app.repaintScreen(history)
 	})
 
 	p := fastping.NewPinger()
@@ -140,7 +142,7 @@ func (app *App) Loop() {
 					history = history[len(history)-historySize:]
 				}
 				if matches > 0 {
-					repaintScreen(history)
+					app.repaintScreen(history)
 				}
 			case <-p.Done():
 				if err = p.Err(); err != nil {

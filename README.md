@@ -2,4 +2,4 @@
 
 a graphical ping command
 
-XXX animation
+[![asciicast](https://asciinema.org/a/980pvrlwvnzgo4jcrjaexka4m.png)](https://asciinema.org/a/980pvrlwvnzgo4jcrjaexka4m)
