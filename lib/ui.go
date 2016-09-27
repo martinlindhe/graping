@@ -38,10 +38,10 @@ func (app *App) repaintScreen(history []savedResult) {
 		} else {
 			// in ms
 			data[i] = hist.rtt.Seconds() * 1000
-			if app.max < data[i] {
+			if data[i] > app.max {
 				app.max = data[i]
 			}
-			if app.min > data[i] {
+			if data[i] > 0 && data[i] < app.min {
 				app.min = data[i]
 			}
 			sum += hist.rtt
