@@ -2,6 +2,7 @@ package graping
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"os/signal"
@@ -147,14 +148,19 @@ func (app *App) Loop() {
 					app.repaintScreen(history)
 				}
 			case <-p.Done():
-				if err = p.Err(); err != nil {
-					fmt.Println("Ping failed:", err)
-				}
+				err = p.Err()
 				break loop
 			}
 		}
 		signal.Stop(c)
 		p.Stop()
+
+		termui.StopLoop()
+
+		if err != nil {
+			// NOTE: due to termui screen clear, this is not always visible
+			log.Println("Ping failed:", err)
+		}
 	}()
 
 	termui.Loop()
