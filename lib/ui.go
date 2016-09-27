@@ -59,13 +59,12 @@ func (app *App) repaintScreen(history []savedResult) {
 		if app.width > 60 {
 			//duration := time.Since(app.started)
 			//txt += fmt.Sprintf("ran %v, ", duration-(duration%time.Second))
-			txt += fmt.Sprintf("min %.0f ms, ", app.min)
-			txt += fmt.Sprintf("max %.0f ms, ", app.max)
+			txt += fmt.Sprintf("%.0f-%.0f ms ", app.min, app.max)
 		}
 
 		avg := sum / time.Duration(avgMeasures)
 		last := history[len(history)-1]
-		txt += fmt.Sprintf("avg %.0f ms, ", avg.Seconds()*1000)
+		txt += fmt.Sprintf("(avg %.0f) ", avg.Seconds()*1000)
 
 		if last.rtt != 0. {
 			txt += fmt.Sprintf("now %.0f ms", last.rtt.Seconds()*1000)
