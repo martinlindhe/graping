@@ -32,6 +32,7 @@ func (app *App) repaintScreen(history []savedResult) {
 	var sum time.Duration
 	data := make([]float64, histLen)
 
+	avgMeasures := 0
 	for i, hist := range history[pos:] {
 		if hist.dead {
 			data[i] = 0
@@ -45,6 +46,9 @@ func (app *App) repaintScreen(history []savedResult) {
 				app.min = data[i]
 			}
 			sum += hist.rtt
+			if data[i] > 0 {
+				avgMeasures++
+			}
 		}
 	}
 	app.chart.Data = data
@@ -59,7 +63,7 @@ func (app *App) repaintScreen(history []savedResult) {
 			txt += fmt.Sprintf("max %.0f ms, ", app.max)
 		}
 
-		avg := sum / time.Duration(histLen)
+		avg := sum / time.Duration(avgMeasures)
 		last := history[len(history)-1]
 		txt += fmt.Sprintf("avg %.0f ms, ", avg.Seconds()*1000)
 
