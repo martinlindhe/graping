@@ -49,8 +49,7 @@ func NewApp() *App {
 
 	app.chart = termui.NewLineChart()
 	app.chart.AxesColor = termui.ColorWhite
-	app.chart.LineColor = termui.ColorYellow
-
+	app.chart.LineColor = termui.ColorGreen
 	app.footer = termui.NewPar("")
 	app.footer.Height = 1
 	app.footer.Border = false
